@@ -3,131 +3,445 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Privacy Policy – Baby Sleep Planner</title>
-    <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
-        background: #0f1117;
-        color: #e2e8f0;
-        line-height: 1.7;
-        padding: 2rem 1.25rem 4rem;
-        max-width: 680px;
-        margin: 0 auto;
-      }
-      h1 {
-        font-size: 1.6rem;
-        font-weight: 700;
-        margin-bottom: 0.25rem;
-        color: #fff;
-      }
-      .meta {
-        font-size: 0.8rem;
-        color: #64748b;
-        margin-bottom: 2.5rem;
-      }
-      h2 {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #fff;
-        margin: 2rem 0 0.5rem;
-      }
-      p {
-        font-size: 0.9rem;
-        color: #94a3b8;
-        margin-bottom: 0.75rem;
-      }
-      a {
-        color: #f59e0b;
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-      hr {
-        border: none;
-        border-top: 1px solid #1e293b;
-        margin: 2rem 0;
-      }
-    </style>
+    <title>Privacy Policy — NapMap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Figtree', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #A0AEC0;
+      background: #0F172A;
+      padding: 0 1rem 5rem;
+    }
+
+    /* Nav */
+    .nav-bar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid #2D3748;
+      margin: 0 -1rem;
+      padding: 0 1rem;
+      margin-bottom: 0;
+    }
+    .nav-inner {
+      max-width: 740px;
+      margin: 0 auto;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+    }
+    .nav-logo-text {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #FDF5E6;
+      letter-spacing: -0.02em;
+    }
+    .nav-back {
+      font-size: 0.85rem;
+      color: #64748B;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-back:hover { color: #A0AEC0; }
+
+    .container {
+      max-width: 740px;
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 3rem 0 2rem;
+      border-bottom: 1px solid #2D3748;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #FDF5E6;
+    }
+
+    header p {
+      margin-top: 0.6rem;
+      color: #64748B;
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    header strong { color: #A0AEC0; }
+
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 2.5rem 0 0.75rem;
+      color: #F1F5F9;
+      letter-spacing: -0.01em;
+    }
+
+    p, li { color: #A0AEC0; }
+
+    strong { color: #CBD5E0; }
+
+    ul, ol { padding-left: 1.5rem; }
+
+    li { margin-bottom: 0.4rem; }
+
+    .highlight-box {
+      background: rgba(16, 185, 129, 0.08);
+      border-left: 3px solid #10B981;
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .highlight-box p {
+      font-weight: 500;
+      color: #10B981;
+    }
+
+    a {
+      color: #6366F1;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    a:hover { color: #818CF8; }
+
+    code {
+      background: #1A202C;
+      border: 1px solid #2D3748;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 0.85em;
+      color: #F59E0B;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid #2D3748;
+    }
+
+    th {
+      background: #1A202C;
+      font-weight: 600;
+      color: #F1F5F9;
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+    }
+
+    td { color: #A0AEC0; }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #2D3748;
+      font-size: 0.85rem;
+      color: #4A5568;
+    }
+
+    /* PLACEHOLDER STYLING — remove after filling in */
+    .placeholder {
+      background: rgba(245, 158, 11, 0.15);
+      color: #F59E0B;
+      padding: 0 4px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+  </style>
   </head>
   <body>
-    <h1>Privacy Policy</h1>
-    <p class="meta">
-      Baby Sleep Planner &nbsp;·&nbsp; Last updated: March 2026
-    </p>
+    <nav class="nav-bar">
+      <div class="nav-inner">
+        <a href="landing.html" class="nav-logo">
+          <img src="data:image/png;base64,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" alt="NapMap" style="border-radius:7px;width:28px;height:28px;">
+          <span class="nav-logo-text">NapMap</span>
+        </a>
+        <a href="landing.html" class="nav-back">← Back</a>
+      </div>
+    </nav>
+    <div class="container">
+      <header>
+        <h1>Privacy Policy</h1>
+        <p>
+          App: <strong>NapMap — Baby Nap &amp; Day Planner</strong><br />
+          Last updated: <strong>March 17, 2026</strong><br />
+          Effective date: <strong>March 17, 2026</strong>
+        </p>
+      </header>
 
-    <p>
-      This Privacy Policy explains how Baby Sleep Planner ("the App", "we",
-      "us") handles information when you use our mobile application. We are
-      committed to protecting your privacy.
-    </p>
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="highlight-box">
+        <p>
+          NapMap does not collect, transmit, or share any personal data. All
+          information you enter stays on your device only and is never sent to
+          any server.
+        </p>
+      </div>
 
-    <h2>1. Information We Collect</h2>
-    <p>
-      <strong style="color: #e2e8f0"
-        >We do not collect any personal information.</strong
-      >
-      The App operates entirely on your device. No data is transmitted to any
-      server operated by us or any third party.
-    </p>
-    <p>
-      The only data the App stores is your baby's first name and daily sleep
-      schedule settings (wake-up time, nap durations, awake window lengths).
-      This information is saved exclusively in your device's local storage and
-      never leaves your device.
-    </p>
+      <!-- 1 ─────────────────────────────────────────── -->
+      <h2>1. Who We Are</h2>
+      <p>
+        NapMap is developed and operated by
+        <span class="">Septynetai, MB</span>, located in
+        <span class="">Sembų g. 2, Buivydiškių k., Vilniaus r.</span>.
+      </p>
+      <p>
+        Contact:
+        <a href="mailto:hello@napmap.site"
+          ><span class="">hello@napmap.site</span></a
+        >
+      </p>
 
-    <h2>2. Data Storage</h2>
-    <p>
-      All app data is stored locally on your device using browser/app local
-      storage. You can delete this data at any time by using the "Reset to
-      Defaults" option in the app's Settings screen, or by uninstalling the app.
-    </p>
+      <!-- 2 ─────────────────────────────────────────── -->
+      <h2>2. What Data We Collect</h2>
+      <p>
+        <strong>We do not collect any personal data.</strong> NapMap is a fully
+        offline, local-only application. Specifically:
+      </p>
+      <ul>
+        <li>
+          We do not collect names, email addresses, or any account information.
+        </li>
+        <li>We do not collect location data.</li>
+        <li>
+          We do not use analytics, crash-reporting SDKs, or tracking libraries.
+        </li>
+        <li>
+          We do not use advertising networks or third-party SDKs that collect
+          data.
+        </li>
+        <li>
+          We do not transmit any data to any server — there is no backend.
+        </li>
+      </ul>
 
-    <h2>3. Third-Party Services</h2>
-    <p>
-      The App does not integrate any third-party analytics, advertising
-      networks, crash-reporting services, or tracking SDKs. No information is
-      shared with any third party.
-    </p>
+      <!-- 3 ─────────────────────────────────────────── -->
+      <h2>3. Data Stored on Your Device</h2>
+      <p>
+        NapMap stores the following data locally on your device using the
+        device's standard local storage mechanism. This data never leaves your
+        device.
+      </p>
 
-    <h2>4. Children's Privacy</h2>
-    <p>
-      The App is designed to assist parents and caregivers of infants. It does
-      not collect any information from or about children. The baby's name you
-      optionally enter is stored only on your own device and is never
-      transmitted anywhere.
-    </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Purpose</th>
+            <th>Storage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              Schedule settings (awake window durations, nap duration, start
+              time)
+            </td>
+            <td>
+              Remembering your preferred schedule configuration between sessions
+            </td>
+            <td>On-device local storage, key <code>scheduleState</code></td>
+          </tr>
+          <tr>
+            <td>Today's generated schedule and block states</td>
+            <td>Displaying the current day's nap/awake timeline</td>
+            <td>On-device local storage, key <code>scheduleState</code></td>
+          </tr>
+          <tr>
+            <td>Theme preference (dark / light)</td>
+            <td>Remembering your display preference</td>
+            <td>On-device local storage, key <code>babyapp_theme</code></td>
+          </tr>
+        </tbody>
+      </table>
 
-    <h2>5. Permissions</h2>
-    <p>
-      The App does not request access to your camera, microphone, contacts,
-      location, or any other device sensor or service.
-    </p>
+      <p>
+        This data is automatically cleared each new day. You can clear it at any
+        time by using the Reset option in Settings, or by clearing the app's
+        storage/cache in your device settings.
+      </p>
 
-    <h2>6. Changes to This Policy</h2>
-    <p>
-      We may update this Privacy Policy from time to time. Any changes will be
-      posted at this URL with an updated "Last updated" date. Continued use of
-      the App after changes constitutes acceptance of the revised policy.
-    </p>
+      <!-- 4 ─────────────────────────────────────────── -->
+      <h2>4. Device Permissions</h2>
+      <p>NapMap may request the following device permission:</p>
 
-    <h2>7. Contact</h2>
-    <p>
-      If you have any questions about this Privacy Policy, please contact us
-      at:<br />
-      <a href="mailto:your@email.com">your@email.com</a>
-    </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Permission</th>
+            <th>Reason</th>
+            <th>Data sent off-device?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Local Notifications</strong> (POST_NOTIFICATIONS)</td>
+            <td>
+              To display on-device reminders for upcoming nap windows or awake
+              time transitions. Notifications are scheduled and displayed
+              entirely on your device.
+            </td>
+            <td>No</td>
+          </tr>
+        </tbody>
+      </table>
 
-    <hr />
-    <p style="font-size: 0.8rem; color: #475569">
-      &copy; 2026 Baby Sleep Planner. All rights reserved.
-    </p>
+      <p>
+        Notification permission is optional. The app functions fully without it.
+        You can revoke permission at any time in your device settings.
+      </p>
+
+      <!-- 5 ─────────────────────────────────────────── -->
+      <h2>5. Children's Privacy</h2>
+      <p>
+        NapMap is designed to help parents and caregivers track nap schedules
+        for infants. The app itself does not collect any personal data from
+        children or from users of any age. We comply with the Children's Online
+        Privacy Protection Act (COPPA) and equivalent regulations. No
+        information about children is collected, stored off-device, or shared.
+      </p>
+
+      <!-- 6 ─────────────────────────────────────────── -->
+      <h2>6. Third-Party Services</h2>
+      <p>
+        NapMap does not integrate any third-party services that collect user
+        data, including but not limited to:
+      </p>
+      <ul>
+        <li>Analytics platforms (e.g., Firebase Analytics, Mixpanel)</li>
+        <li>Advertising networks</li>
+        <li>Crash reporting services (e.g., Sentry, Crashlytics)</li>
+        <li>Social login providers</li>
+      </ul>
+      <p>
+        The only platform-level services involved are the
+        <strong>Google Play Store</strong> (Android) and
+        <strong>Apple App Store</strong> (iOS), which may collect aggregated,
+        anonymized install and crash statistics as part of their standard
+        platform operations. This data is governed by their respective privacy
+        policies and is not controlled by us.
+      </p>
+
+      <!-- 7 ─────────────────────────────────────────── -->
+      <h2>7. Data Sharing and Disclosure</h2>
+      <p>
+        We do not sell, trade, rent, or otherwise transfer any data about you to
+        third parties, because we never receive any data from you in the first
+        place. All app data remains on your device under your full control.
+      </p>
+
+      <!-- 8 ─────────────────────────────────────────── -->
+      <h2>8. Data Security</h2>
+      <p>
+        Because no data is transmitted to or stored on external servers, the
+        attack surface is limited to your own device. We recommend keeping your
+        device operating system and the app updated to benefit from the latest
+        security patches.
+      </p>
+
+      <!-- 9 ─────────────────────────────────────────── -->
+      <h2>9. Your Rights (GDPR / EU Residents)</h2>
+      <p>
+        If you are located in the European Economic Area (EEA), you have the
+        following rights under the General Data Protection Regulation (GDPR).
+        Given that we hold no personal data about you, most of these rights are
+        satisfied by design:
+      </p>
+      <ul>
+        <li>
+          <strong>Right of access</strong> — All data is stored locally on your
+          device and visible within the app.
+        </li>
+        <li>
+          <strong>Right to rectification</strong> — You can edit schedule
+          settings directly in the app.
+        </li>
+        <li>
+          <strong>Right to erasure</strong> — Use Reset in Settings, or clear
+          app data from your device settings.
+        </li>
+        <li>
+          <strong>Right to data portability</strong> — Not applicable; no data
+          is held by us.
+        </li>
+        <li>
+          <strong>Right to object / restrict processing</strong> — Not
+          applicable; no processing occurs on our end.
+        </li>
+      </ul>
+      <p>
+        For any GDPR-related requests or questions, contact us at
+        <a href="mailto:hello@napmap.site"
+          ><span class="">hello@napmap.site</span></a
+        >.
+      </p>
+
+      <!-- 10 ────────────────────────────────────────── -->
+      <h2>10. Data Retention</h2>
+      <p>
+        All locally stored data is automatically cleared each new calendar day
+        as part of the app's normal operation. You can also clear it manually at
+        any time via Settings → Reset, or by clearing app data in your device
+        settings. We do not retain any data on our end.
+      </p>
+
+      <!-- 11 ────────────────────────────────────────── -->
+      <h2>11. Changes to This Policy</h2>
+      <p>
+        We may update this Privacy Policy from time to time. Any changes will be
+        reflected by an updated "Last updated" date at the top of this page. If
+        material changes are made, we will update the policy URL in the app
+        store listing. We encourage you to review this page periodically.
+      </p>
+
+      <!-- 12 ────────────────────────────────────────── -->
+      <h2>12. Contact Us</h2>
+      <p>
+        If you have any questions or concerns about this Privacy Policy or the
+        app's data practices, please contact:
+      </p>
+      <p style="margin-top: 0.75rem">
+        <span class="">Septynetai, MB</span><br />
+        <span class="">Sembų g. 2, Buivydiškių k., Vilniaus r.</span><br />
+        Email:
+        <a href="mailto:hello@napmap.site"
+          ><span class="">hello@napmap.site</span></a
+        >
+      </p>
+
+      <footer>
+        <p>
+          This privacy policy is publicly accessible at:
+          <span class="">https://napmap.site/privacy-policy</span>
+        </p>
+        <p style="margin-top: 0.5rem">
+          © 2026 <span class="">Septynetai, MB</span>. All rights reserved.
+        </p>
+      </footer>
+    </div>
   </body>
 </html>
