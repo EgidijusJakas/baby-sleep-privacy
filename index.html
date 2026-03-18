@@ -173,6 +173,7 @@
       align-items: center;
       gap: 10px;
       padding: 11px 22px;
+      width: 168px;
       border-radius: 12px;
       background: var(--night);
       border: 1px solid var(--border);
@@ -867,7 +868,6 @@
         <img src="data:image/png;base64,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" alt="NapMap" class="nav-logo-icon" style="border-radius:8px;width:32px;height:32px;">
         <span class="nav-logo-text">NapMap</span>
       </a>
-      <a href="privacy-policy.html" class="nav-link">Privacy</a>
     </div>
   </nav>
 
@@ -945,9 +945,9 @@
               </div>
               <div class="mock-time-row">
                 <div class="mock-time-range">
-                  <span class="mock-time-val">13:30</span>
+                  <span class="mock-time-val">14:15</span>
                   <span class="mock-time-arrow">→</span>
-                  <span class="mock-time-val">15:00</span>
+                  <span class="mock-time-val">16:00</span>
                 </div>
                 <div class="mock-elapsed-col">
                   <div class="mock-elapsed-label">Elapsed</div>
@@ -957,7 +957,7 @@
               <div class="mock-progress-bar">
                 <div class="mock-progress-fill"></div>
               </div>
-              <div class="mock-countdown">55 min until wake time</div>
+              <div class="mock-countdown">1 hr 21 min until wake time</div>
             </div>
 
             <!-- Quick action pill -->
@@ -973,14 +973,14 @@
                   <!-- Sun icon -->
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
                   <span class="mock-summary-type">Wake</span>
-                  <span class="mock-summary-val">6h 10m</span>
+                  <span class="mock-summary-val">9h 30m</span>
                 </div>
                 <div class="mock-divider"></div>
                 <div class="mock-summary-item">
                   <!-- Moon icon -->
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                   <span class="mock-summary-type">Napping</span>
-                  <span class="mock-summary-val">2h 30m</span>
+                  <span class="mock-summary-val">3h 30m</span>
                 </div>
               </div>
             </div>
@@ -999,7 +999,7 @@
                 </div>
                 <div class="mock-trow-content">
                   <div class="mock-trow-title" style="color:#A0AEC0;">Wake window <span style="font-weight:400;">#2</span></div>
-                  <div class="mock-trow-sub">11:00 → 13:30 · 2 hr 30 min</div>
+                  <div class="mock-trow-sub">11:15 → 14:15 · 3 hr</div>
                 </div>
               </div>
 
@@ -1010,7 +1010,7 @@
                 </div>
                 <div class="mock-trow-content" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);">
                   <div class="mock-trow-title">Nap <span style="color:#A0AEC0;font-weight:400;">#2</span></div>
-                  <div class="mock-trow-sub" style="color:#A0AEC0;">13:30 → 15:00 · 1 hr 30 min</div>
+                  <div class="mock-trow-sub" style="color:#A0AEC0;">14:15 → 16:00 · 1 hr 45 min</div>
                 </div>
               </div>
 
@@ -1021,7 +1021,7 @@
                 </div>
                 <div class="mock-trow-content">
                   <div class="mock-trow-title" style="color:#64748B;">Wake window <span style="font-weight:400;">#3</span></div>
-                  <div class="mock-trow-sub">15:00 → 17:30 · 2 hr 30 min</div>
+                  <div class="mock-trow-sub">16:00 → 20:00 · 4 hr</div>
                 </div>
               </div>
 
@@ -1032,7 +1032,7 @@
                 </div>
                 <div class="mock-trow-content">
                   <div class="mock-trow-title" style="color:#64748B;">Bedtime</div>
-                  <div class="mock-trow-sub">19:30 · Sleep tight, little one</div>
+                  <div class="mock-trow-sub">20:00 · Sleep tight, little one</div>
                 </div>
               </div>
             </div>
@@ -1167,8 +1167,8 @@
         </div>
         <h2 class="notify-title">Get notified at launch</h2>
         <p class="notify-sub">Be the first to know when NapMap lands on the App Store and Google Play.</p>
-        <form class="notify-form" id="notifyForm" onsubmit="handleNotify(event)">
-          <input class="notify-input" type="email" placeholder="your@email.com" aria-label="Email address" required />
+        <form class="notify-form" id="notifyForm" action="https://formspree.io/f/mdawydpp" method="POST" onsubmit="handleNotify(event)">
+          <input class="notify-input" type="email" name="email" placeholder="your@email.com" aria-label="Email address" required />
           <button class="notify-btn" type="submit">Notify me</button>
         </form>
         <div class="notify-success" id="notifySuccess">
@@ -1197,12 +1197,22 @@
   </footer>
 
   <script>
-    function handleNotify(e) {
+    async function handleNotify(e) {
       e.preventDefault();
       const form = document.getElementById('notifyForm');
       const success = document.getElementById('notifySuccess');
-      form.style.display = 'none';
-      success.style.display = 'flex';
+      const data = new FormData(form);
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: data,
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          form.style.display = 'none';
+          success.style.display = 'flex';
+        }
+      } catch (_) {}
     }
   </script>
 
