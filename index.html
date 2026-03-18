@@ -1,1220 +1,1701 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NapMap — Baby Nap & Day Planner</title>
-  <meta name="description" content="NapMap automatically builds your baby's full day schedule from wake-up time. Live countdowns, one-tap adjustments, 100% private. Coming soon to iOS & Android." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:        #0F172A;
-      --card:      #1A202C;
-      --night:     #1E293B;
-      --border:    #2D3748;
-      --amber:     #F59E0B;
-      --indigo:    #6366F1;
-      --green:     #10B981;
-      --cream:     #FDF5E6;
-      --primary:   #F1F5F9;
-      --muted:     #A0AEC0;
-      --dim:       #64748B;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Figtree', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--primary);
-      overflow-x: hidden;
-      line-height: 1.6;
-    }
-
-    /* ─── LAYOUT ──────────────────────────────────── */
-    .container {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
-
-    /* ─── NAV ─────────────────────────────────────── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-    nav .inner {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-    }
-    .nav-logo-icon {
-      width: 32px;
-      height: 32px;
-    }
-    .nav-logo-text {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--cream);
-      letter-spacing: -0.02em;
-    }
-    .nav-link {
-      font-size: 0.875rem;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-    .nav-link:hover { color: var(--cream); }
-
-    /* ─── HERO ────────────────────────────────────── */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      padding: 100px 0 80px;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-bg-glow {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      pointer-events: none;
-      z-index: 0;
-    }
-    .glow-amber {
-      width: 420px; height: 420px;
-      background: rgba(245, 158, 11, 0.08);
-      top: -60px; right: -80px;
-    }
-    .glow-indigo {
-      width: 360px; height: 360px;
-      background: rgba(99, 102, 241, 0.08);
-      bottom: 0; left: -60px;
-    }
-    .hero .container {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: center;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      border-radius: 100px;
-      padding: 4px 14px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--green);
-      margin-bottom: 1.5rem;
-    }
-    .badge-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--green);
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.6; transform: scale(0.85); }
-    }
-    .hero-title {
-      font-size: clamp(2.4rem, 5vw, 3.6rem);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-      color: var(--cream);
-      margin-bottom: 1.25rem;
-    }
-    .hero-title span {
-      color: var(--amber);
-    }
-    .hero-sub {
-      font-size: 1.1rem;
-      color: var(--muted);
-      max-width: 440px;
-      margin-bottom: 2.25rem;
-      line-height: 1.65;
-    }
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      align-items: center;
-    }
-    .btn-store {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 11px 22px;
-      width: 168px;
-      border-radius: 12px;
-      background: var(--night);
-      border: 1px solid var(--border);
-      text-decoration: none;
-      transition: background 0.15s, border-color 0.15s, transform 0.1s;
-      cursor: default;
-    }
-    .btn-store:hover {
-      background: #253047;
-      border-color: var(--dim);
-    }
-    .btn-store:active { transform: scale(0.98); }
-    .btn-store-label {
-      display: flex;
-      flex-direction: column;
-    }
-    .btn-store-sub {
-      font-size: 0.68rem;
-      font-weight: 500;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .btn-store-name {
-      font-size: 0.93rem;
-      font-weight: 700;
-      color: var(--cream);
-      line-height: 1.1;
-    }
-
-    /* ─── PHONE MOCKUP ────────────────────────────── */
-    .hero-visual {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .phone {
-      width: 264px;
-      background: #0F172A;
-      border: 2px solid #2D3748;
-      border-radius: 44px;
-      padding: 12px 10px 0;
-      box-shadow: 0 40px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06);
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
-    .phone-notch {
-      width: 72px;
-      height: 18px;
-      background: #111827;
-      border-radius: 0 0 14px 14px;
-      margin: 0 auto 6px;
-      flex-shrink: 0;
-    }
-    .phone-screen {
-      border-radius: 32px 32px 34px 34px;
-      overflow: hidden;
-      background: #0F172A;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    /* status bar */
-    .mock-statusbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 12px 2px;
-      flex-shrink: 0;
-    }
-    .mock-statusbar-time {
-      font-size: 7.5px;
-      font-weight: 700;
-      color: #F1F5F9;
-    }
-    .mock-statusbar-icons {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-    }
-    /* Live card */
-    .mock-live-card {
-      background: #1A202C;
-      border-radius: 16px;
-      padding: 12px 14px;
-      margin: 4px 8px 6px;
-      flex-shrink: 0;
-    }
-    .mock-card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 7px;
-    }
-    .mock-caption {
-      font-size: 7px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #A0AEC0;
-    }
-    .mock-live-badge {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      font-size: 7px;
-      font-weight: 700;
-      color: #10B981;
-    }
-    .mock-live-badge::before {
-      content: '';
-      display: block;
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: #10B981;
-      animation: pulse 2s infinite;
-    }
-    .mock-headline-row {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      margin-bottom: 5px;
-    }
-    .mock-headline {
-      font-size: 13px;
-      font-weight: 700;
-      color: #FDF5E6;
-      line-height: 1.2;
-    }
-    .mock-zzz {
-      display: flex;
-      align-items: flex-end;
-      gap: 1px;
-      padding-bottom: 1px;
-    }
-    .mock-time-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 8px;
-    }
-    .mock-time-range {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-    }
-    .mock-time-val {
-      font-size: 12px;
-      font-weight: 600;
-      color: #A0AEC0;
-      font-variant-numeric: tabular-nums;
-    }
-    .mock-time-arrow {
-      font-size: 8px;
-      color: #64748B;
-    }
-    .mock-elapsed-col {
-      text-align: right;
-    }
-    .mock-elapsed-label {
-      font-size: 6px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #A0AEC0;
-      margin-bottom: 1px;
-    }
-    .mock-elapsed-val {
-      font-size: 11px;
-      font-weight: 600;
-      color: #A0AEC0;
-      font-variant-numeric: tabular-nums;
-    }
-    .mock-progress-bar {
-      height: 5px;
-      border-radius: 3px;
-      background: rgba(255,255,255,0.07);
-      overflow: hidden;
-      margin-bottom: 5px;
-    }
-    .mock-progress-fill {
-      height: 100%;
-      width: 27%;
-      border-radius: 3px;
-      background: linear-gradient(90deg, #3b82f6, #6366F1);
-    }
-    .mock-countdown {
-      font-size: 6.5px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #64748B;
-      text-align: center;
-    }
-    /* Quick action pill */
-    .mock-quick-action {
-      display: flex;
-      justify-content: center;
-      margin: 0 0 5px;
-      flex-shrink: 0;
-    }
-    .mock-pill {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      border-radius: 100px;
-      border: 1px solid #2D3748;
-      font-size: 6.5px;
-      color: #A0AEC0;
-    }
-    .mock-pill strong {
-      color: #F1F5F9;
-      font-weight: 700;
-    }
-    /* Summary */
-    .mock-summary {
-      margin: 0 8px 6px;
-      padding: 6px 10px;
-      flex-shrink: 0;
-    }
-    .mock-summary-label {
-      font-size: 6.5px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #A0AEC0;
-      margin-bottom: 5px;
-    }
-    .mock-summary-row {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-    }
-    .mock-summary-item {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-    }
-    .mock-summary-type {
-      font-size: 6.5px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: #A0AEC0;
-    }
-    .mock-summary-val {
-      font-size: 8px;
-      font-weight: 600;
-      color: #FDF5E6;
-    }
-    .mock-divider {
-      width: 1px;
-      height: 14px;
-      background: #2D3748;
-    }
-    /* Section label */
-    .mock-section-label {
-      font-size: 6.5px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #A0AEC0;
-      margin: 0 8px 4px 18px;
-      flex-shrink: 0;
-    }
-    /* Timeline */
-    .mock-timeline {
-      position: relative;
-      padding: 0 8px 6px 8px;
-      flex: 1;
-      overflow: hidden;
-    }
-    .mock-timeline-line {
-      position: absolute;
-      top: 0; bottom: 0;
-      left: 20px;
-      width: 2px;
-      background: #2D3748;
-    }
-    .mock-trow {
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 0;
-    }
-    .mock-trow-icon {
-      position: relative;
-      z-index: 1;
-      width: 24px; height: 24px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .mock-trow-content {
-      flex: 1;
-      padding: 5px 7px;
-      border-radius: 9px;
-    }
-    .mock-trow-title {
-      font-size: 8px;
-      font-weight: 600;
-      color: #FDF5E6;
-      line-height: 1.3;
-    }
-    .mock-trow-sub {
-      font-size: 6.5px;
-      color: #64748B;
-      margin-top: 1px;
-    }
-    /* Bottom nav */
-    .mock-nav {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 7px 0 10px;
-      border-top: 1px solid #2D3748;
-      background: #1A202C;
-      flex-shrink: 0;
-    }
-    .mock-nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-    .mock-nav-label {
-      font-size: 6px;
-      font-weight: 600;
-    }
-
-    /* ─── FEATURES ────────────────────────────────── */
-    section { padding: 6rem 0; }
-    .section-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--green);
-      margin-bottom: 0.75rem;
-    }
-    .section-title {
-      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: var(--cream);
-      margin-bottom: 1rem;
-    }
-    .section-sub {
-      font-size: 1.05rem;
-      color: var(--muted);
-      max-width: 560px;
-      line-height: 1.65;
-    }
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-      margin-top: 3.5rem;
-    }
-    .feature-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2rem 1.75rem;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-    .feature-card:hover {
-      border-color: var(--dim);
-      transform: translateY(-3px);
-    }
-    .feature-icon {
-      width: 48px; height: 48px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1.25rem;
-      font-size: 1.4rem;
-    }
-    .icon-amber  { background: rgba(245, 158, 11, 0.12); }
-    .icon-indigo { background: rgba(99, 102, 241, 0.12); }
-    .icon-green  { background: rgba(16, 185, 129, 0.12); }
-    .icon-blue   { background: rgba(59, 130, 246, 0.12); }
-    .icon-pink   { background: rgba(236, 72, 153, 0.12); }
-    .icon-slate  { background: rgba(100, 116, 139, 0.12); }
-    .feature-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--cream);
-      margin-bottom: 0.6rem;
-      letter-spacing: -0.01em;
-    }
-    .feature-desc {
-      font-size: 0.9rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    /* ─── HOW IT WORKS ────────────────────────────── */
-    .how-section {
-      background: var(--night);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
-      margin-top: 3.5rem;
-      position: relative;
-    }
-    .steps::before {
-      content: '';
-      position: absolute;
-      top: 28px;
-      left: calc(16.66% + 1rem);
-      right: calc(16.66% + 1rem);
-      height: 1px;
-      background: linear-gradient(90deg, var(--border), var(--dim), var(--border));
-    }
-    .step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-    .step-num {
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      background: var(--card);
-      border: 2px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--cream);
-      margin-bottom: 1.25rem;
-      position: relative;
-      z-index: 1;
-    }
-    .step-num.active {
-      background: var(--green);
-      border-color: var(--green);
-      color: white;
-      box-shadow: 0 0 24px rgba(16, 185, 129, 0.4);
-    }
-    .step-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--cream);
-      margin-bottom: 0.5rem;
-      letter-spacing: -0.01em;
-    }
-    .step-desc {
-      font-size: 0.875rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    /* ─── PRIVACY ─────────────────────────────────── */
-    .privacy-banner {
-      background: linear-gradient(135deg, rgba(16,185,129,0.07) 0%, rgba(99,102,241,0.07) 100%);
-      border: 1px solid rgba(16,185,129,0.2);
-      border-radius: 24px;
-      padding: 3rem 3.5rem;
-      display: flex;
-      align-items: center;
-      gap: 3rem;
-    }
-    .privacy-icon {
-      font-size: 3.5rem;
-      flex-shrink: 0;
-    }
-    .privacy-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--cream);
-      margin-bottom: 0.6rem;
-      letter-spacing: -0.02em;
-    }
-    .privacy-desc {
-      color: var(--muted);
-      font-size: 0.95rem;
-      line-height: 1.65;
-    }
-    .privacy-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-    .pill {
-      background: rgba(16,185,129,0.1);
-      border: 1px solid rgba(16,185,129,0.2);
-      border-radius: 100px;
-      padding: 4px 12px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--green);
-    }
-
-    /* ─── NOTIFY ──────────────────────────────────── */
-    .notify-section {
-      text-align: center;
-    }
-    .notify-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      padding: 4rem 3rem;
-      max-width: 600px;
-      margin: 0 auto;
-      position: relative;
-      overflow: hidden;
-    }
-    .notify-card::before {
-      content: '';
-      position: absolute;
-      top: -80px; left: 50%;
-      transform: translateX(-50%);
-      width: 300px; height: 300px;
-      background: radial-gradient(circle, rgba(245,158,11,0.07) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .notify-moon {
-      margin-bottom: 1.5rem;
-    }
-    .notify-title {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--cream);
-      letter-spacing: -0.03em;
-      margin-bottom: 0.75rem;
-    }
-    .notify-sub {
-      color: var(--muted);
-      margin-bottom: 2rem;
-      font-size: 0.95rem;
-    }
-    .notify-form {
-      display: flex;
-      gap: 0.75rem;
-      max-width: 420px;
-      margin: 0 auto;
-    }
-    .notify-input {
-      flex: 1;
-      background: var(--night);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      color: var(--cream);
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .notify-input::placeholder { color: var(--dim); }
-    .notify-input:focus { border-color: var(--amber); }
-    .notify-btn {
-      background: var(--amber);
-      color: #000;
-      border: none;
-      border-radius: 12px;
-      padding: 12px 22px;
-      font-family: inherit;
-      font-size: 0.93rem;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: opacity 0.15s, transform 0.1s;
-    }
-    .notify-btn:hover { opacity: 0.9; }
-    .notify-btn:active { transform: scale(0.97); }
-    .notify-note {
-      font-size: 0.78rem;
-      color: var(--dim);
-      margin-top: 0.9rem;
-    }
-    /* Success state */
-    .notify-success {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      animation: fadeIn 0.3s ease;
-    }
-    .notify-success-icon {
-      font-size: 2.5rem;
-    }
-    .notify-success-msg {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--green);
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ─── FOOTER ──────────────────────────────────── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 2.5rem 0;
-    }
-    footer .inner {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .footer-logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-    }
-    .footer-name {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--cream);
-    }
-    .footer-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-    .footer-link {
-      font-size: 0.85rem;
-      color: var(--dim);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-    .footer-link:hover { color: var(--muted); }
-    .footer-copy {
-      font-size: 0.8rem;
-      color: var(--dim);
-    }
-
-    /* ─── RESPONSIVE ──────────────────────────────── */
-    @media (max-width: 768px) {
-      .hero .container {
-        grid-template-columns: 1fr;
-        gap: 3rem;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NapMap — Baby Nap & Day Planner</title>
+    <meta
+      name="description"
+      content="NapMap automatically builds your baby's full day schedule from wake-up time. Live countdowns, one-tap adjustments, 100% private. Coming soon to iOS & Android."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-      .hero-visual { order: -1; }
-      .phone { width: 240px; }
+
+      :root {
+        --bg: #0f172a;
+        --card: #1a202c;
+        --night: #1e293b;
+        --border: #2d3748;
+        --amber: #f59e0b;
+        --indigo: #6366f1;
+        --green: #10b981;
+        --cream: #fdf5e6;
+        --primary: #f1f5f9;
+        --muted: #a0aec0;
+        --dim: #64748b;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Figtree", system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--primary);
+        overflow-x: hidden;
+        line-height: 1.6;
+      }
+
+      /* ─── LAYOUT ──────────────────────────────────── */
+      .container {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+
+      /* ─── NAV ─────────────────────────────────────── */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+      }
+      nav .inner {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+      .nav-logo-icon {
+        width: 32px;
+        height: 32px;
+      }
+      .nav-logo-text {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--cream);
+        letter-spacing: -0.02em;
+      }
+      .nav-link {
+        font-size: 0.875rem;
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+      .nav-link:hover {
+        color: var(--cream);
+      }
+
+      /* ─── HERO ────────────────────────────────────── */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 100px 0 80px;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-bg-glow {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        pointer-events: none;
+        z-index: 0;
+      }
+      .glow-amber {
+        width: 420px;
+        height: 420px;
+        background: rgba(245, 158, 11, 0.08);
+        top: -60px;
+        right: -80px;
+      }
+      .glow-indigo {
+        width: 360px;
+        height: 360px;
+        background: rgba(99, 102, 241, 0.08);
+        bottom: 0;
+        left: -60px;
+      }
+      .hero .container {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(16, 185, 129, 0.12);
+        border: 1px solid rgba(16, 185, 129, 0.25);
+        border-radius: 100px;
+        padding: 4px 14px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--green);
+        margin-bottom: 1.5rem;
+      }
+      .badge-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(0.85);
+        }
+      }
+      .hero-title {
+        font-size: clamp(2.4rem, 5vw, 3.6rem);
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        color: var(--cream);
+        margin-bottom: 1.25rem;
+      }
+      .hero-title span {
+        color: var(--amber);
+      }
+      .hero-sub {
+        font-size: 1.1rem;
+        color: var(--muted);
+        max-width: 440px;
+        margin-bottom: 2.25rem;
+        line-height: 1.65;
+      }
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+      }
+      .btn-store {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 22px;
+        width: 168px;
+        border-radius: 12px;
+        background: var(--night);
+        border: 1px solid var(--border);
+        text-decoration: none;
+        transition: background 0.15s, border-color 0.15s, transform 0.1s;
+        cursor: default;
+      }
+      .btn-store:hover {
+        background: #253047;
+        border-color: var(--dim);
+      }
+      .btn-store:active {
+        transform: scale(0.98);
+      }
+      .btn-store-label {
+        display: flex;
+        flex-direction: column;
+      }
+      .btn-store-sub {
+        font-size: 0.68rem;
+        font-weight: 500;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .btn-store-name {
+        font-size: 0.93rem;
+        font-weight: 700;
+        color: var(--cream);
+        line-height: 1.1;
+      }
+
+      /* ─── PHONE MOCKUP ────────────────────────────── */
+      .hero-visual {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .phone {
+        width: 264px;
+        background: #0f172a;
+        border: 2px solid #2d3748;
+        border-radius: 44px;
+        padding: 12px 10px 0;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.55),
+          0 0 0 1px rgba(255, 255, 255, 0.04),
+          inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+      .phone-notch {
+        width: 72px;
+        height: 18px;
+        background: #111827;
+        border-radius: 0 0 14px 14px;
+        margin: 0 auto 6px;
+        flex-shrink: 0;
+      }
+      .phone-screen {
+        border-radius: 32px 32px 34px 34px;
+        overflow: hidden;
+        background: #0f172a;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      /* status bar */
+      .mock-statusbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 12px 2px;
+        flex-shrink: 0;
+      }
+      .mock-statusbar-time {
+        font-size: 7.5px;
+        font-weight: 700;
+        color: #f1f5f9;
+      }
+      .mock-statusbar-icons {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+      /* Live card */
+      .mock-live-card {
+        background: #1a202c;
+        border-radius: 16px;
+        padding: 12px 14px;
+        margin: 4px 8px 6px;
+        flex-shrink: 0;
+      }
+      .mock-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 7px;
+      }
+      .mock-caption {
+        font-size: 7px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #a0aec0;
+      }
+      .mock-live-badge {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 7px;
+        font-weight: 700;
+        color: #10b981;
+      }
+      .mock-live-badge::before {
+        content: "";
+        display: block;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #10b981;
+        animation: pulse 2s infinite;
+      }
+      .mock-headline-row {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        margin-bottom: 5px;
+      }
+      .mock-headline {
+        font-size: 13px;
+        font-weight: 700;
+        color: #fdf5e6;
+        line-height: 1.2;
+      }
+      .mock-zzz {
+        display: flex;
+        align-items: flex-end;
+        gap: 1px;
+        padding-bottom: 1px;
+      }
+      .mock-time-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 8px;
+      }
+      .mock-time-range {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+      .mock-time-val {
+        font-size: 12px;
+        font-weight: 600;
+        color: #a0aec0;
+        font-variant-numeric: tabular-nums;
+      }
+      .mock-time-arrow {
+        font-size: 8px;
+        color: #64748b;
+      }
+      .mock-elapsed-col {
+        text-align: right;
+      }
+      .mock-elapsed-label {
+        font-size: 6px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #a0aec0;
+        margin-bottom: 1px;
+      }
+      .mock-elapsed-val {
+        font-size: 11px;
+        font-weight: 600;
+        color: #a0aec0;
+        font-variant-numeric: tabular-nums;
+      }
+      .mock-progress-bar {
+        height: 5px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.07);
+        overflow: hidden;
+        margin-bottom: 5px;
+      }
+      .mock-progress-fill {
+        height: 100%;
+        width: 27%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, #3b82f6, #6366f1);
+      }
+      .mock-countdown {
+        font-size: 6.5px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #64748b;
+        text-align: center;
+      }
+      /* Quick action pill */
+      .mock-quick-action {
+        display: flex;
+        justify-content: center;
+        margin: 0 0 5px;
+        flex-shrink: 0;
+      }
+      .mock-pill {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: 100px;
+        border: 1px solid #2d3748;
+        font-size: 6.5px;
+        color: #a0aec0;
+      }
+      .mock-pill strong {
+        color: #f1f5f9;
+        font-weight: 700;
+      }
+      /* Summary */
+      .mock-summary {
+        margin: 0 8px 6px;
+        padding: 6px 10px;
+        flex-shrink: 0;
+      }
+      .mock-summary-label {
+        font-size: 6.5px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #a0aec0;
+        margin-bottom: 5px;
+      }
+      .mock-summary-row {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+      .mock-summary-item {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+      .mock-summary-type {
+        font-size: 6.5px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #a0aec0;
+      }
+      .mock-summary-val {
+        font-size: 8px;
+        font-weight: 600;
+        color: #fdf5e6;
+      }
+      .mock-divider {
+        width: 1px;
+        height: 14px;
+        background: #2d3748;
+      }
+      /* Section label */
+      .mock-section-label {
+        font-size: 6.5px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #a0aec0;
+        margin: 0 8px 4px 18px;
+        flex-shrink: 0;
+      }
+      /* Timeline */
+      .mock-timeline {
+        position: relative;
+        padding: 0 8px 6px 8px;
+        flex: 1;
+        overflow: hidden;
+      }
+      .mock-timeline-line {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 20px;
+        width: 2px;
+        background: #2d3748;
+      }
+      .mock-trow {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 0;
+      }
+      .mock-trow-icon {
+        position: relative;
+        z-index: 1;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .mock-trow-content {
+        flex: 1;
+        padding: 5px 7px;
+        border-radius: 9px;
+      }
+      .mock-trow-title {
+        font-size: 8px;
+        font-weight: 600;
+        color: #fdf5e6;
+        line-height: 1.3;
+      }
+      .mock-trow-sub {
+        font-size: 6.5px;
+        color: #64748b;
+        margin-top: 1px;
+      }
+      /* Bottom nav */
+      .mock-nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 7px 0 10px;
+        border-top: 1px solid #2d3748;
+        background: #1a202c;
+        flex-shrink: 0;
+      }
+      .mock-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+      }
+      .mock-nav-label {
+        font-size: 6px;
+        font-weight: 600;
+      }
+
+      /* ─── FEATURES ────────────────────────────────── */
+      section {
+        padding: 6rem 0;
+      }
+      .section-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--green);
+        margin-bottom: 0.75rem;
+      }
+      .section-title {
+        font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--cream);
+        margin-bottom: 1rem;
+      }
+      .section-sub {
+        font-size: 1.05rem;
+        color: var(--muted);
+        max-width: 560px;
+        line-height: 1.65;
+      }
       .features-grid {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+        margin-top: 3.5rem;
+      }
+      .feature-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem 1.75rem;
+        transition: border-color 0.2s, transform 0.2s;
+      }
+      .feature-card:hover {
+        border-color: var(--dim);
+        transform: translateY(-3px);
+      }
+      .feature-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.25rem;
+        font-size: 1.4rem;
+      }
+      .icon-amber {
+        background: rgba(245, 158, 11, 0.12);
+      }
+      .icon-indigo {
+        background: rgba(99, 102, 241, 0.12);
+      }
+      .icon-green {
+        background: rgba(16, 185, 129, 0.12);
+      }
+      .icon-blue {
+        background: rgba(59, 130, 246, 0.12);
+      }
+      .icon-pink {
+        background: rgba(236, 72, 153, 0.12);
+      }
+      .icon-slate {
+        background: rgba(100, 116, 139, 0.12);
+      }
+      .feature-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--cream);
+        margin-bottom: 0.6rem;
+        letter-spacing: -0.01em;
+      }
+      .feature-desc {
+        font-size: 0.9rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      /* ─── HOW IT WORKS ────────────────────────────── */
+      .how-section {
+        background: var(--night);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
       }
       .steps {
-        grid-template-columns: 1fr;
-        gap: 2.5rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-top: 3.5rem;
+        position: relative;
       }
-      .steps::before { display: none; }
-      .privacy-banner {
+      .steps::before {
+        content: "";
+        position: absolute;
+        top: 28px;
+        left: calc(16.66% + 1rem);
+        right: calc(16.66% + 1rem);
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          var(--border),
+          var(--dim),
+          var(--border)
+        );
+      }
+      .step {
+        display: flex;
         flex-direction: column;
+        align-items: center;
         text-align: center;
-        padding: 2.25rem 1.75rem;
-        gap: 1.5rem;
+      }
+      .step-num {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 2px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--cream);
+        margin-bottom: 1.25rem;
+        position: relative;
+        z-index: 1;
+      }
+      .step-num.active {
+        background: var(--green);
+        border-color: var(--green);
+        color: white;
+        box-shadow: 0 0 24px rgba(16, 185, 129, 0.4);
+      }
+      .step-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--cream);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.01em;
+      }
+      .step-desc {
+        font-size: 0.875rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      /* ─── PRIVACY ─────────────────────────────────── */
+      .privacy-banner {
+        background: linear-gradient(
+          135deg,
+          rgba(16, 185, 129, 0.07) 0%,
+          rgba(99, 102, 241, 0.07) 100%
+        );
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        border-radius: 24px;
+        padding: 3rem 3.5rem;
+        display: flex;
+        align-items: center;
+        gap: 3rem;
+      }
+      .privacy-icon {
+        font-size: 3.5rem;
+        flex-shrink: 0;
+      }
+      .privacy-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--cream);
+        margin-bottom: 0.6rem;
+        letter-spacing: -0.02em;
+      }
+      .privacy-desc {
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.65;
+      }
+      .privacy-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+      .pill {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        border-radius: 100px;
+        padding: 4px 12px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--green);
+      }
+
+      /* ─── NOTIFY ──────────────────────────────────── */
+      .notify-section {
+        text-align: center;
+      }
+      .notify-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        padding: 4rem 3rem;
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+      }
+      .notify-card::before {
+        content: "";
+        position: absolute;
+        top: -80px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(
+          circle,
+          rgba(245, 158, 11, 0.07) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .notify-moon {
+        margin-bottom: 1.5rem;
+      }
+      .notify-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--cream);
+        letter-spacing: -0.03em;
+        margin-bottom: 0.75rem;
+      }
+      .notify-sub {
+        color: var(--muted);
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
       }
       .notify-form {
+        display: flex;
+        gap: 0.75rem;
+        max-width: 420px;
+        margin: 0 auto;
+      }
+      .notify-input {
+        flex: 1;
+        background: var(--night);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        color: var(--cream);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .notify-input::placeholder {
+        color: var(--dim);
+      }
+      .notify-input:focus {
+        border-color: var(--amber);
+      }
+      .notify-btn {
+        background: var(--amber);
+        color: #000;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-family: inherit;
+        font-size: 0.93rem;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: opacity 0.15s, transform 0.1s;
+      }
+      .notify-btn:hover {
+        opacity: 0.9;
+      }
+      .notify-btn:active {
+        transform: scale(0.97);
+      }
+      .notify-note {
+        font-size: 0.78rem;
+        color: var(--dim);
+        margin-top: 0.9rem;
+      }
+      /* Success state */
+      .notify-success {
+        display: none;
         flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        animation: fadeIn 0.3s ease;
+      }
+      .notify-success-icon {
+        font-size: 2.5rem;
+      }
+      .notify-success-msg {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--green);
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ─── FOOTER ──────────────────────────────────── */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 2.5rem 0;
       }
       footer .inner {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.25rem;
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
       }
-      .footer-links { flex-wrap: wrap; gap: 1rem; }
-    }
-    @media (min-width: 769px) and (max-width: 1024px) {
-      .features-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-  </style>
-</head>
-<body>
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      .footer-name {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--cream);
+      }
+      .footer-links {
+        display: flex;
+        gap: 1.5rem;
+      }
+      .footer-link {
+        font-size: 0.85rem;
+        color: var(--dim);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+      .footer-link:hover {
+        color: var(--muted);
+      }
+      .footer-copy {
+        font-size: 0.8rem;
+        color: var(--dim);
+      }
 
-  <!-- ── NAV ─────────────────────────────────────── -->
-  <nav>
-    <div class="inner">
-      <a href="#" class="nav-logo">
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAARGVYSWZNTQAqAAAACAABh2kABAAAAAEAAAAaAAAAAAADoAEAAwAAAAEAAQAAoAIABAAAAAEAAABAoAMABAAAAAEAAABAAAAAAEZRQrAAAAHLaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA2LjAuMCI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT4xPC9leGlmOkNvbG9yU3BhY2U+CiAgICAgICAgIDxleGlmOlBpeGVsWERpbWVuc2lvbj41MTI8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFlEaW1lbnNpb24+NTEyPC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CgCF4JgAABcSSURBVGgFVZpZjFxpeYbPUqeqenO7225vs3nGnnjGnswMDAgEClJIlOQmYlEUolwRBaIoUhRFSi7IHdwkQYoQFyO4QQKEgkQGAjiACEhACBoFBAzLzHjG63hvuxe7l+ruqrPkfd7vVLf4XXXqP9//Le+3/Ms57fTx4+9Jk6xJ6iRp1EnSNGnqJtFd0jQNt/pCVD+o/EAQSyMRhs2vS5YktbmzJtVgIzb+JbqRfuTQiwT6WiJ3VogyNKntDtmsYSAXsmJDk/7VddkRbKOXkG1JQji42g68QgUsuyTmsIMWCSAjXuwYlQdRGODDvrUZOQgkKALRUUf30cMLNV1Rh7gU10mGeuGRQkYN0YxisZXOODZQw1AbUFSbdcy/J4wiN4wEU3hvdEDa4wh4mDdvK9lKBf+elYA/dsMSES4YMSTQKRRuyHDSdOwW+mDBsn7wXv9a2+Zo8YZPYgvA6LQyftDbXtzlNqxaawvAVGvfi4/sIUE4Yph6NpaxIv16iCJ3rx1QdizbxsW4I3itQm7GSnbRhBFf0UoyaVE07nInsugSlwl6ocdBkUYmW7SWjoTZUIhJ34ZmaxOxHTcghLM0yzQHYLIp/e42lMk4QTFAd8zVXjR1Yj6gyHUovVYd/kiAmHKliMGjW3V2ybaM8bSs07JioN9NqkqoFAuvB0CwpAFam82HHSTSjqvB5d5SbdLoQU45UUt20xLGpB6m7SO/LXR3437M5rHdNEo5CNBmO1Wtn/TBhfrpE8N3PDU6c2L4rRcnPv3Vfle4yNKYzwuaMZBn244hzwEsoq5tgVXjpsYA3Hgih6L6PUNEaR3ZlQ2pvfLm3qr0a2bLqK+kjcr0+JHy43+9/syjo6Kn0TSZqH/xelNpyREIKbctJJiuCKHNI9YgrrqjaQEDS5KIhms2LNNIw17qjSbiaV5kgs9XaJE3XCWE1sBY1KM7psZ9r0jXtjqf/Nr0reXsox9cXbmVP/+fk0VHGxHY94AYImp+s0m9VqE6Qt4OIaQmt3FLd+hyBwr/ggaP/+k+Riwn/lrmpVNFjRIXn0RU2XmS5rgYLc3yLDl/o/uhf+1uj7Ln/3Zlarr6++cP3Vgq+sXQq03wOQtyZiwYvujOVnM5QLO7gokl37oDQtPgFtl+tL9iCClYxFRp/26qTqc/M314euroVP9gt5jO864kq2o0Kte3tpfXN+8Mtpa2d3ZGVTE9mRyZr1fWkvsbyXvfsfG+3xt84VszL75c/PZjIxGX70t5JKGNXpgzurgEAK1C3PqGid+GmjqTPKiJooR3wRu2RhkKpVVdaj2b3//oA4fecmThzPTkkaKYzFJCgxJpddDquhqOttY3V6rht37nzNefPZEdf7D+2Gdnz/6o+McPbCRV86bHdr778dtHjpSf+fq+j352st/VbmDbFgeDgQgKkIxUlw71zeGHOhE/kxT0wbt3Dc9aJagNiUoVcnTh6RMP/+HC/BO97kSSVAKqo0fVDJnzalpnKLIky5Ju0Zuffeyxw8+cfvRinY6S6rWXLvRnp5qySW7e6exU2Q9+1f/l2c4PXyq6BbLYQIWOauMK8hS2XuDizOOPvBe4xrMXV2rXAWiL2LFoj26EVOwqjKmJhSdOvO+RY+8o8m7TjOSMVPYn8smZrDeZ9ieTLE+lpiqbcpTsDJLBZrKzle2UKqGlf3jPR3746yf/7YvL2zvL3aKWyvXNfFRqS6nyfJS55sFIsISToP5mawfbOaDhcdTNiY9IWFAdpqJyZS7mZVWPDh0486Yn/mJm+miSjORMnmazB7KDx/L9B/NuX1PWqZWjmhq6NrmW/E65WG0snr926umF7x07+NqbT5Rf/ufVf/n81Lf/by7LttOm6hUsAJj2wiHD2P5N4OO7QJWmv/XI+81kNrxqoSMnvK42SETCn1Sb5c7RheeeO/OhXneSRDXp9L78wce784fyPEdejEqTroKuVtfZRHLlqalPzhRXu+nmt+9+rj/8+Wzy4q/Pz/z0tbt37p84fPB3V+5deOnVfy/LHYwYM37TdiueWw0Glb5vlIExIwUgWtBjFyR0InDBBeVXlTNcmD/95jMfpuI10HQWjuWPni66fc0lhPXJ8mZ8ABJDkuRJPez+6vbbn1m4c3Hr7YPR4Z38929vv3ulk03N7Jyap2z2zzxcVeXPXvlc2nBMUuIA40o2BFChSjSjsS+Q8vn9T3qMEEeYHT5mBccwFhHoENO0bqqJ3tzbnvm7yYm5lL0vO/pI8eiZXqegvDqdJM/5dPTppOqokHKtR3lTpbOz2cXHZ7623ew/OvXqveatExPFgUMkan11RJLqcm72xNrg5r21K94xvKaEZSEAO+BFGEOHqn5HJjTK4tOeTGHGJbCHFvp4btEnT/zJzNSxut7R4rBwtPPwqa49T7QryQEtNRITaHWEPiaAY9FMZYNrW2/ZqI6tbD/FcwoLQfrgyc5wu1q6hduK7FMn33936dXhaBODrVn1lHhPDAB4lQR6ONXkB/c/aWAKhoxDBxCQQ4n42l5djQ7MnTr9+J82WiibdGIyf/zZXtEFq0KuLVEORODlTOQBNwiMXKrXkzOL5R+sJ++qi5PalKk+rT1JOj2b3Vuqy5Hum153bnN7eWn1QsqeTbAB4yoAmfNghIwFStUfI2KTgha8R6DxwZAFEXn42LvyrGt6dvihTr+vIgWrAOkKbn2Ay1Xog0InT8W8f7aYman7/UpFlWeaJ/jQ6aaHHujEdqFQP3TknUUhvYCQIeCBkCCOPaEWwjV1mHkGBFWfYAQs0NWYB/wmzeTEoYW5M01TKvz9fjZ/pFMpE4KqcBm94934NK9CUh2RnFwTOpfeOAXp2VqONfJH6EWtm0zpjJVX5up6tG/qodmZh6iZFgrbjgHoKpKq09412t2ggw9CtPAWzW7tj0or1946P3u8190n1VI+NctiL76Z4lov31S5gz4+BKrsNdeVHVM0VPeTa8JtNsVeM5s9rsgHU/k1haPTTSZm9IpBDghQd27mRJP4AQfgBFZoDIqYRGacIIALHGMw+eq4m9ssY4+0v1Qz0w9KXuhFnJxJ846QVc9N/dOpiU/rxKMh6da3TvOF+uyT5d9003tKQ9bJJ7Jbp+u/mku+V3OPf2Qhy5+Y+NRbZz6SZSOR+pOZTrFEp6lnph8QMpLApkYCNGAkcQUAOO1K6IuA2z/Us4aKl2+bHd1k3WIOKZKYdXuEomo6d3dOPVC88GjxhSLb0DbWyXYO1d98qH5+UB8um2mdJOTRsNk/bGYeqT4x3/yPfFbUivT+ic5nHux+6e72qbLuyk6mBxNiyFTsFrNgoOnW0wCwghdEMAAMkHqkxBOB3m1m4qKvVHq9wMFMZ2M8gq4TMvyaqS+vfOBQ98eP9T5xrD47rA9369V+c75MJq7Uf5nmPZ3txFan+y6NPni6+NjJ0UcG6RNlOtNLbvQ6F9d2Hn71/p/nPRWPwy1QaqjVtiLdGAJEgNWRjjyIQIPO0p/qNDr2a29Uw+HSWNwCWkb1sAKeNNvZUoI1F5OyOPm9mx97du5Tx6Zf6adv1E1/eXT6SvXBZubt/VRnVbJY5NVm949+vlGd7H5+X3FO+2HZTF5df+ev7n24KU5EnZQ7tcoTxJyCqBxZsbgmQAsY4CJ7e6ZrwPE8wK19a52hPsQgDvkJjdvhaEMei6apOVjT1qm1v+n3mzJ/5if3Pz6x9tpM/15SHKiKE5Mz+/tFpXmjJknBEdug+eOfrr+ts/66pAfl4a36se7EtLbzUdVUZbK5zrRWKrSkDYebLvFMhsbVjyo36YtzClhURio9wAGUFSlekoqUO3bkaMyQbu/c1STUpi/urc1mfbWeO5RVadLta2mfSZK3VkXa1XrSrVXoVeXS9PkIEFp5e1UnO7i9s1CWSaHTad2MyrqsZCIZrNeDdcVd5c4D6cbgNsGNyOtqeSGEBlqnKIYbHICu2e/ZAhPe+GRvVocRlnx980ZTlyhQ3Ork9hvl7MFC7JV05U2now/JiXcKmJJpnI1EolIYzZPKB70IYtURqU7uXC9ZfsSqw1Zdbm7d9AFnHDrpQI2voJNmLYahNonFC9zIU9iERE0/xE0ACaVW7s76YHFzsKTVQEhk995Sdfca4IVY4dZVmEr1K/VVDHwY0rXivZWCDb2BCJtU6I1XnqwuVeurWlSliSDq6XltU3uI3gAEDhUV+weX8azAbzskmb3zD/h3vUTY+VKHj1zIRqPN5fvntFSGS6rQGxere3fYXLWbgnv300IXRehV4vqwcNkHXBVRIRT6+8v1jUslUbI/ekuyunZpc+uuwSh92mBahAAWCoExSNHlkFCyuKp5BCej065CcDA29jZfXP653kfFrSCMRs3lV8vl2xzKQKDQqjZIhQKZxKcs/eaQqDsVYiiJvUK3slhdeWVYDnGGJmqT3ll5yVXAYUrwyIIHgU9xkAf3GVEnHurVo1oCN4hhMYER7hDNuqtrl9c2ru/fd5zjhOoqSUfD+vIrw62N/OjxTm9CFZLoEb0m5aiIaBmCuioqqaL0hzvN4tXR4jW9iyFAnCHwIR1sLy2vvlp0eq4FAqtm++hTiAQziATMe1t+cO5ps0Ue2lJDzpw40SYJBs0wXQ8deMZvr1DuPDZaRu4v632E5nGaF4ZP2vBHTXXvGWzo283Srerq6yMdoYVGMEidOhzeOhevfXdx+Rd5ViAMUj7RAS/xH29QOI5yFbREWe2kyM6B2RUBAZaY1gq3Ft28u7j80vHNd09PHFbGeWMCk9ia7c36+gXFtdT5Xp/+VFb0eEiQNm2Aw+1me1BvrtWDNfWBJ8+1Uygnmg8OfzLYXr6++KKO6yqERlkRV6tbYQcIIE0kODSgqoRUbZjhPuhwQnNUNAJ008SUape5evP7Z07+GVWkVUXvEiynyaaFpBwmq3fr1TulYqI5Ckz5qJVHZ/AxDBmS2wq/qkYOKBDyRAv6Gzf/V2/vOnlP1mXIWJBmJlDcooiNTPGLOthiLtPzV0jNFB4YN56xfrHJqyMDN+/8eHXtohGoeBtNWV21aLLIaHUkvMwzLU3lMC1HmdBTu46Z9Ai0PmZ2+AWxSTc2b19f/JEyDBeoHVDABKHtGTQkAfZFjwXm0IUx5p7nOEFS9BRTr2L2T0qtLyur8uK1/2ZKYQnVWli0SkY90KnEqbJ2asCCzl3oRF1PQo69JgnON8mlG9/ZGW5QETo+OuQKAzVvf/CJDjgMWB2NYl74oGooPDEPi2w0G0Y6WJwSPSj2llbP3br7M61LQq9Bgah4p0hJuB7A570MrwxRDDJBWsSmrcCcCDZNsbj8ys3Fn2ivVCoCj3wmwgooO5z6kUCn11kId3RVmFsP+MVHfRUDRFqKFFiLAyM6ruvMe+HqN1Wy6rEEOhhgZWFhdzfuQO+dS2s/O1ot97xbtw4rSzujwYU3zvqIJTChHOPGYhDgUVMfBni4RkkjEDLhZIiZ3UIBXUEmP3YKqMKY5Nvb985f/UY81CreQqaPcLD1cpog3pLCGapLZ2tNkjhciA0Pqf00v3zjO+uDm5pahmgjxDuwCoQ7PmmAiISP0VAknfzQ3LO70Oh4sqPB1Ii3/cZnVBAJETT7O9rUJvsHZ6Ye0Ks1zxDGQpZiIzl8onJwxqapfnfStLiz8vK5S19W6aNWX2Y/khErtEWDRuCQpCk0weY318AOg2Oq+UAJL2AjS8ZH2OJdBkPn3zi7OVjUXGKB0+QktM4AtR4VxSlIZ58y8qMUqcO8Tba27527/BXJeaXmKAdyjPA+HZZAy4/httHxj7hgYqmx64jpXQcPcrH4mMyNkqgQ7lYa6Ft3dbgohqP181e/qmO2TGCkXVVcOIRMHSHxSm9ADn+wpq9f/dpgS88YWjophvEuq+i0nkSt4xU49FXaPR/UjZmg+Xpo/k1it9/xq74gisORFiL1VMIM2lVPIJPRqULaGCxK24H9pzwR2YBYPh0eYRYxCknc4QJ5Sbtv3PrB5Rvf1SsLsOirhhzBVgrxQGtPeAo8YOjiji3gFeFva8MjIG41Ga6rAq2W9UEslEgZ5pwKPVvlvSs3v7+49AulDhFKpT3uM7MpJICRC3ulE+Ty/dcvXP1GlhZgc9oYM0DdtiCMU8VrSEDFKI0f4isBlhMCBkUdWQkl5jBKwgZ0nQwsj5R1wN+uFV7HXr/6lY3NmzrdUd+BF0+oJRwydsnmab4zvH/u8gtam3RoU0k48DZujdKKARpBMjASYQ9FMgwb16iais87BegcXsghj1Eb9r2p1qcLcGwCHbKRpx39Ae/clRfKckvOuuwBLsYQDmZdtd29duWFwdYdlb7RsKgbq2OMcSXc2Bz81g2sUAgAxmdEIpBsckZhLfHMRim1Xsmk5pY+MMHpA5rlcQMXiZL2tTzrr29cVx6EXvLs8ewD4ImcwdVk56/+192Vlzv5pHhQyZgDTFBAy5Ing2HRvgEBVuVW5dAetgBj0/nh+TdHDxmxSQ16Y5id3H2bcbR3R50fhQ8pq8Pv9YEe/Efz+05hsqWHOl17127/8MrNb3eyPqEQLHmIVw6tOjTW0pCVAiLEiarFYwYDGxP0K+dwF3OoYrK3iIgiGjni0AOPSxF7jh6sBC7oDmSednWo1EfVrvK3Aq5Zrj3rlxeunfVZTZpY6R1OpQs4cXWw2L9BwtXuoCWcEic+8qEh2FGGY9ZARA9UPqFGpcAuJqfaYfccFLhDnWa5VwWqU93OpevfLPLpwweeqxs98Gqh6C7fu3DuypfQrmlMdXHaI3BW4I7uhcVbmAHqVUHUg3jUZFKTCk4vKkInUd36D7IGvDv7x+5hbuwOYUaN4ChwHKRbQnDsBYFZROmfv/qVlfu/1rlVBbO+ee2VS18sqyHrZsuAMjdsONZcrN7rtUDIIoMGhyuBywnHB9CLv7P7so1YEHcN2HOnABsGL9yaEN6JqB/KiCDwFT8slB65U1d/cxL/uSv/cXD/OS0ad+79clRua8sTN4MUnnhZYSXmetR6pdg7k2JAPTp1mEIxtihHTKBfH9lyGvWUq5ValPDOWMVuJmzQAiIdFYPe68Nq9fpjqrMJk23L9/BASzPvDqv65tKPZVuPuUbPsM8pAmesCEoffXqMqhdmW02QwyI/KjlxKcWsmRIkAxLST2hqIaNHj9Wohx+qPlYT+qUTHQqVyNDbJlYFJjgRKgoer6RePAbG44KGubWYDeE3JEdHv4wiZRnLqqsmYoyoI+gAkzmvQiTVt7gIn2zoAIYq09FGX1lGJnhVADaCIFIoc4rRwEoCCASVa6Ymev2XZtPjfxPx/lD/4LMJ7ty8gpkOGDWKKpjDHDfQMv3nqCqKW1ezhkSk2zjEp4XIPmE7fIopoHsVp6OucS24zjL2+GqESNtrkFk9zDIcHgKXSqCKaIAjSUTDZa8udashosWAugBHNwHyJsAvN0wGxwADalKDVmmHwdpDSlCRaekBkTDLto49No8n1osCW7YO9IisPvptVHahYnnXYnTBYPR2CSWSs5qYzRaPeY0oSqKp6zgZgMRi4uJ3bEMY05jnITS3trOnCGkDlXgcimRLJxRxA4VjnkOm+zgpasRVaXdwUC1KmhABnI+hGhkoqQ3QtBDot3HYhUX6UDTWJa0QCE04L5lQQpWLHsrQiUhY3hMXwXFGFlUSFgZIEECqLnBcI/oBuAbVWjbyDBsXYETSxQTFGwRdQrEHiD4i+qpJvwjEz/NYRAKMtFXolugqVmYWT5C96mHUWnQFcaQ31AEUiniwYghgdCAUC639+rsRI8GhrpTrjyp+RRxuS5793MqNQKd2JrDxo6L1wSr0WlEtTNpZmXZK0QsQ1h4sxles8kFHibBvQUVBBwTYCJquWIBAvC2nIiEibHnkVm9moBAEKRAt/X+zA5GRrt9+zgAAAABJRU5ErkJggg==" alt="NapMap" class="nav-logo-icon" style="border-radius:8px;width:32px;height:32px;">
-        <span class="nav-logo-text">NapMap</span>
-      </a>
-    </div>
-  </nav>
-
-  <!-- ── HERO ─────────────────────────────────────── -->
-  <section class="hero">
-    <div class="glow-amber hero-bg-glow"></div>
-    <div class="glow-indigo hero-bg-glow"></div>
-    <div class="container">
-      <div class="hero-content">
-        <div class="badge">
-          <span class="badge-dot"></span>
-          Coming Soon
-        </div>
-        <h1 class="hero-title">
-          Your baby's day,<br/>
-          <span>perfectly planned.</span>
-        </h1>
-        <p class="hero-sub">
-          NapMap builds your baby's full nap &amp; wake schedule instantly — then keeps it live all day long. No guesswork, no spreadsheets.
-        </p>
-        <div class="hero-actions">
-          <a href="#notify" class="btn-store">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="currentColor" style="color:#A0AEC0"/>
-            </svg>
-            <span class="btn-store-label">
-              <span class="btn-store-sub">Download on the</span>
-              <span class="btn-store-name">App Store</span>
-            </span>
-          </a>
-          <a href="#notify" class="btn-store">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M3.18 23.76a2.33 2.33 0 0 0 .55.24c.2.05.42.07.64.04L4.6 24 13.89 14.7 4.37.5C4.08.56 3.82.7 3.6.9a2.3 2.3 0 0 0-.42 2.84v17.18a2.3 2.3 0 0 0 0 2.84zM16 17.55 5.66 23.33l.3-.1 10.04-5.68zm5.19-7.87C21.72 10 22 10.5 22 11s-.28 1-.81 1.32L18.5 14l-3.5-3 3.5-3 2.69 1.68zM5.66.67 16 6.45 13.89 8.57l-8.55-7.8.3-.1z" fill="currentColor" style="color:#A0AEC0"/>
-            </svg>
-            <span class="btn-store-label">
-              <span class="btn-store-sub">Get it on</span>
-              <span class="btn-store-name">Google Play</span>
-            </span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Phone mockup -->
-      <div class="hero-visual">
-        <div class="phone">
-          <div class="phone-notch"></div>
-          <div class="phone-screen">
-
-            <!-- Status bar -->
-            <div class="mock-statusbar">
-              <span class="mock-statusbar-time">9:41</span>
-              <div class="mock-statusbar-icons">
-                <!-- signal bars -->
-                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><rect x="0" y="5" width="2" height="3" rx="0.5" fill="#A0AEC0"/><rect x="2.7" y="3.5" width="2" height="4.5" rx="0.5" fill="#A0AEC0"/><rect x="5.4" y="1.5" width="2" height="6.5" rx="0.5" fill="#A0AEC0"/><rect x="8.1" y="0" width="2" height="8" rx="0.5" fill="#A0AEC0" opacity="0.3"/></svg>
-                <!-- wifi -->
-                <svg width="10" height="8" viewBox="0 0 12 9" fill="none"><path d="M1 3.5C2.8 1.3 4.8 0 6 0s3.2 1.3 5 3.5" stroke="#A0AEC0" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M3 5.5C4 4.2 5 3.5 6 3.5s2 .7 3 2" stroke="#A0AEC0" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="8" r="1" fill="#A0AEC0"/></svg>
-                <!-- battery -->
-                <svg width="16" height="8" viewBox="0 0 16 8" fill="none"><rect x="0.5" y="0.5" width="13" height="7" rx="2" stroke="#A0AEC0" stroke-width="1"/><rect x="1.5" y="1.5" width="9" height="5" rx="1" fill="#A0AEC0"/><path d="M14.5 2.5v3" stroke="#A0AEC0" stroke-width="1.5" stroke-linecap="round"/></svg>
-              </div>
-            </div>
-
-            <!-- Live status card -->
-            <div class="mock-live-card">
-              <div class="mock-card-top">
-                <span class="mock-caption">Nap #2</span>
-                <span class="mock-live-badge">Live</span>
-              </div>
-              <div class="mock-headline-row">
-                <span class="mock-headline">Eimantas is napping</span>
-                <div class="mock-zzz">
-                  <span style="font-size:10px;font-weight:700;color:#6366F1;opacity:0.85;">z</span>
-                  <span style="font-size:8px;font-weight:700;color:#6366F1;opacity:0.6;">z</span>
-                  <span style="font-size:6px;font-weight:700;color:#6366F1;opacity:0.4;">z</span>
-                </div>
-              </div>
-              <div class="mock-time-row">
-                <div class="mock-time-range">
-                  <span class="mock-time-val">14:15</span>
-                  <span class="mock-time-arrow">→</span>
-                  <span class="mock-time-val">16:00</span>
-                </div>
-                <div class="mock-elapsed-col">
-                  <div class="mock-elapsed-label">Elapsed</div>
-                  <div class="mock-elapsed-val">00:24:15</div>
-                </div>
-              </div>
-              <div class="mock-progress-bar">
-                <div class="mock-progress-fill"></div>
-              </div>
-              <div class="mock-countdown">1 hr 21 min until wake time</div>
-            </div>
-
-            <!-- Quick action pill -->
-            <div class="mock-quick-action">
-              <div class="mock-pill">Woke up already? <strong>End nap</strong></div>
-            </div>
-
-            <!-- Summary -->
-            <div class="mock-summary">
-              <div class="mock-summary-label">Planned today</div>
-              <div class="mock-summary-row">
-                <div class="mock-summary-item">
-                  <!-- Sun icon -->
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-                  <span class="mock-summary-type">Wake</span>
-                  <span class="mock-summary-val">9h 30m</span>
-                </div>
-                <div class="mock-divider"></div>
-                <div class="mock-summary-item">
-                  <!-- Moon icon -->
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                  <span class="mock-summary-type">Napping</span>
-                  <span class="mock-summary-val">3h 30m</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Schedule section label -->
-            <div class="mock-section-label">Today's schedule</div>
-
-            <!-- Timeline -->
-            <div class="mock-timeline">
-              <div class="mock-timeline-line"></div>
-
-              <!-- Past: Wake window #2 (faded) -->
-              <div class="mock-trow" style="opacity:0.45;">
-                <div class="mock-trow-icon" style="background:rgba(160,174,192,0.12);">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#A0AEC0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-                </div>
-                <div class="mock-trow-content">
-                  <div class="mock-trow-title" style="color:#A0AEC0;">Wake window <span style="font-weight:400;">#2</span></div>
-                  <div class="mock-trow-sub">11:15 → 14:15 · 3 hr</div>
-                </div>
-              </div>
-
-              <!-- Current: Nap #2 (amber highlighted) -->
-              <div class="mock-trow">
-                <div class="mock-trow-icon" style="background:#F59E0B;border:1.5px solid #F59E0B;box-shadow:0 0 8px rgba(245,158,11,0.4);">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FDF5E6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                </div>
-                <div class="mock-trow-content" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);">
-                  <div class="mock-trow-title">Nap <span style="color:#A0AEC0;font-weight:400;">#2</span></div>
-                  <div class="mock-trow-sub" style="color:#A0AEC0;">14:15 → 16:00 · 1 hr 45 min</div>
-                </div>
-              </div>
-
-              <!-- Upcoming: Wake window #3 -->
-              <div class="mock-trow">
-                <div class="mock-trow-icon" style="background:rgba(245,158,11,0.14);">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-                </div>
-                <div class="mock-trow-content">
-                  <div class="mock-trow-title" style="color:#64748B;">Wake window <span style="font-weight:400;">#3</span></div>
-                  <div class="mock-trow-sub">16:00 → 20:00 · 4 hr</div>
-                </div>
-              </div>
-
-              <!-- Upcoming: Bedtime -->
-              <div class="mock-trow">
-                <div class="mock-trow-icon" style="background:rgba(129,140,248,0.14);">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#818CF8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                </div>
-                <div class="mock-trow-content">
-                  <div class="mock-trow-title" style="color:#64748B;">Bedtime</div>
-                  <div class="mock-trow-sub">20:00 · Sleep tight, little one</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Bottom nav -->
-            <div class="mock-nav">
-              <!-- Schedule (active) -->
-              <div class="mock-nav-item">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                <span class="mock-nav-label" style="color:#F59E0B;">Schedule</span>
-              </div>
-              <!-- Template -->
-              <div class="mock-nav-item">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A0AEC0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                <span class="mock-nav-label" style="color:#A0AEC0;">Template</span>
-              </div>
-              <!-- Settings -->
-              <div class="mock-nav-item">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A0AEC0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                <span class="mock-nav-label" style="color:#A0AEC0;">Settings</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── FEATURES ────────────────────────────────── -->
-  <section id="features">
-    <div class="container">
-      <div class="section-label">Features</div>
-      <h2 class="section-title">Everything a tired parent needs</h2>
-      <p class="section-sub">Built around the real rhythm of a baby's day — not a rigid alarm clock, but a living plan that adapts as the day unfolds.</p>
-
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon icon-amber">⚡</div>
-          <div class="feature-title">Instant schedule generation</div>
-          <p class="feature-desc">Enter your baby's wake-up time and NapMap builds the entire day — awake windows, naps, and bedtime — in one tap.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon icon-green">🟢</div>
-          <div class="feature-title">Live status, always current</div>
-          <p class="feature-desc">A real-time card tells you exactly what's happening right now — whether baby is awake, napping, or heading to bed — with a live countdown.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon icon-indigo">✏️</div>
-          <div class="feature-title">One-tap adjustments</div>
-          <p class="feature-desc">Baby fell asleep early? Woke up late? Tap once to adjust any block and every subsequent time cascades automatically.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon icon-blue">📅</div>
-          <div class="feature-title">Auto-reset every morning</div>
-          <p class="feature-desc">Each new day starts fresh automatically. No manual clearing, no leftover data — just open the app and enter today's wake time.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon icon-pink">🌙</div>
-          <div class="feature-title">Flexible nap templates</div>
-          <p class="feature-desc">Configure your baby's awake window durations and nap lengths in settings. NapMap adapts as your baby grows and schedules evolve.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon icon-slate">🌗</div>
-          <div class="feature-title">Dark & light mode</div>
-          <p class="feature-desc">Designed for middle-of-the-night checks. A polished dark theme is the default, with a clean light mode for daytime use.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── HOW IT WORKS ───────────────────────────── -->
-  <section class="how-section" id="how">
-    <div class="container">
-      <div class="section-label">How it works</div>
-      <h2 class="section-title">Up and running in 10 seconds</h2>
-      <p class="section-sub">No account, no setup, no subscriptions. Just open it and go.</p>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num active">1</div>
-          <div class="step-title">Enter wake-up time</div>
-          <p class="step-desc">Type in the time your baby woke up this morning — that's all the information NapMap needs.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-title">Get the full day plan</div>
-          <p class="step-desc">NapMap generates an alternating awake–nap–awake schedule from wake-up through bedtime, based on your settings.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-title">Follow along in real time</div>
-          <p class="step-desc">The live card tracks the current window and counts down to the next transition. Adjust any block with a tap if reality changes.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── PRIVACY ─────────────────────────────────── -->
-  <section id="privacy">
-    <div class="container">
-      <div class="privacy-banner">
-        <div class="privacy-icon">🔒</div>
-        <div>
-          <div class="privacy-title">100% private, by design</div>
-          <p class="privacy-desc">
-            NapMap has no backend, no accounts, and no analytics. Every piece of data you enter stays on your device only — and auto-clears every morning. We built it this way intentionally, because your family's routine is yours alone.
-          </p>
-          <div class="privacy-pills">
-            <span class="pill">No account required</span>
-            <span class="pill">No data collected</span>
-            <span class="pill">No internet needed</span>
-            <span class="pill">Offline first</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── NOTIFY ──────────────────────────────────── -->
-  <section class="notify-section" id="notify">
-    <div class="container">
-      <div class="notify-card">
-        <div class="notify-moon">
-          <svg viewBox="0 0 80 60" width="80" height="60" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-            <path d="M 46,8 A 16,16 0 1 0 46,44 A 14,14 0 1 1 46,8 Z" fill="#F59E0B" fill-opacity="0.85"/>
-            <circle cx="66" cy="6"  r="1.5" fill="#A0AEC0" fill-opacity="0.5"/>
-            <circle cx="72" cy="16" r="1"   fill="#A0AEC0" fill-opacity="0.35"/>
-            <circle cx="14" cy="10" r="1.2" fill="#A0AEC0" fill-opacity="0.45"/>
-            <circle cx="20" cy="22" r="0.8" fill="#A0AEC0" fill-opacity="0.3"/>
-            <circle cx="60" cy="28" r="1"   fill="#A0AEC0" fill-opacity="0.25"/>
-          </svg>
-        </div>
-        <h2 class="notify-title">Get notified at launch</h2>
-        <p class="notify-sub">Be the first to know when NapMap lands on the App Store and Google Play.</p>
-        <form class="notify-form" id="notifyForm" action="https://formspree.io/f/mdawydpp" method="POST" onsubmit="handleNotify(event)">
-          <input class="notify-input" type="email" name="email" placeholder="your@email.com" aria-label="Email address" required />
-          <button class="notify-btn" type="submit">Notify me</button>
-        </form>
-        <div class="notify-success" id="notifySuccess">
-          <span class="notify-success-icon">✅</span>
-          <span class="notify-success-msg">You're on the list! We'll be in touch.</span>
-        </div>
-        <p class="notify-note">No spam. One email when the app ships. That's it.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── FOOTER ──────────────────────────────────── -->
-  <footer>
-    <div class="inner">
-      <a href="#" class="footer-logo">
-        <img src="data:image/png;base64,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" alt="NapMap" style="border-radius:6px;width:24px;height:24px;">
-        <span class="footer-name">NapMap</span>
-      </a>
-      <div class="footer-links">
-        <a href="#features" class="footer-link">Features</a>
-        <a href="#how" class="footer-link">How it works</a>
-        <a href="privacy-policy.html" class="footer-link">Privacy Policy</a>
-      </div>
-      <span class="footer-copy">© 2026 NapMap. All rights reserved.</span>
-    </div>
-  </footer>
-
-  <script>
-    async function handleNotify(e) {
-      e.preventDefault();
-      const form = document.getElementById('notifyForm');
-      const success = document.getElementById('notifySuccess');
-      const data = new FormData(form);
-      try {
-        const res = await fetch(form.action, {
-          method: 'POST',
-          body: data,
-          headers: { 'Accept': 'application/json' }
-        });
-        if (res.ok) {
-          form.style.display = 'none';
-          success.style.display = 'flex';
+      /* ─── RESPONSIVE ──────────────────────────────── */
+      @media (max-width: 768px) {
+        .hero .container {
+          grid-template-columns: 1fr;
+          gap: 3rem;
         }
-      } catch (_) {}
-    }
-  </script>
+        .hero-visual {
+          order: -1;
+        }
+        .phone {
+          width: 240px;
+        }
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+        .steps {
+          grid-template-columns: 1fr;
+          gap: 2.5rem;
+        }
+        .steps::before {
+          display: none;
+        }
+        .privacy-banner {
+          flex-direction: column;
+          text-align: center;
+          padding: 2.25rem 1.75rem;
+          gap: 1.5rem;
+        }
+        .notify-form {
+          flex-direction: column;
+        }
+        footer .inner {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1.25rem;
+        }
+        .footer-links {
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+      }
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .features-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── NAV ─────────────────────────────────────── -->
+    <nav>
+      <div class="inner">
+        <a href="#" class="nav-logo">
+          <img
+            src="data:image/png;base64,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"
+            alt="NapMap"
+            class="nav-logo-icon"
+            style="border-radius: 8px; width: 32px; height: 32px"
+          />
+          <span class="nav-logo-text">NapMap</span>
+        </a>
+      </div>
+    </nav>
 
-</body>
+    <!-- ── HERO ─────────────────────────────────────── -->
+    <section class="hero">
+      <div class="glow-amber hero-bg-glow"></div>
+      <div class="glow-indigo hero-bg-glow"></div>
+      <div class="container">
+        <div class="hero-content">
+          <div class="badge">
+            <span class="badge-dot"></span>
+            Coming Soon
+          </div>
+          <h1 class="hero-title">
+            Your baby's day,<br />
+            <span>perfectly planned.</span>
+          </h1>
+          <p class="hero-sub">
+            NapMap builds your baby's full nap &amp; wake schedule instantly —
+            then keeps it live all day long. No guesswork, no spreadsheets.
+          </p>
+          <div class="hero-actions">
+            <a href="#notify" class="btn-store">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"
+                  fill="currentColor"
+                  style="color: #a0aec0"
+                />
+              </svg>
+              <span class="btn-store-label">
+                <span class="btn-store-sub">Download on the</span>
+                <span class="btn-store-name">App Store</span>
+              </span>
+            </a>
+            <a href="#notify" class="btn-store">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M3.18 23.76a2.33 2.33 0 0 0 .55.24c.2.05.42.07.64.04L4.6 24 13.89 14.7 4.37.5C4.08.56 3.82.7 3.6.9a2.3 2.3 0 0 0-.42 2.84v17.18a2.3 2.3 0 0 0 0 2.84zM16 17.55 5.66 23.33l.3-.1 10.04-5.68zm5.19-7.87C21.72 10 22 10.5 22 11s-.28 1-.81 1.32L18.5 14l-3.5-3 3.5-3 2.69 1.68zM5.66.67 16 6.45 13.89 8.57l-8.55-7.8.3-.1z"
+                  fill="currentColor"
+                  style="color: #a0aec0"
+                />
+              </svg>
+              <span class="btn-store-label">
+                <span class="btn-store-sub">Get it on</span>
+                <span class="btn-store-name">Google Play</span>
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Phone mockup -->
+        <div class="hero-visual">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <!-- Status bar -->
+              <div class="mock-statusbar">
+                <span class="mock-statusbar-time">9:41</span>
+                <div class="mock-statusbar-icons">
+                  <!-- signal bars -->
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                    <rect
+                      x="0"
+                      y="5"
+                      width="2"
+                      height="3"
+                      rx="0.5"
+                      fill="#A0AEC0"
+                    />
+                    <rect
+                      x="2.7"
+                      y="3.5"
+                      width="2"
+                      height="4.5"
+                      rx="0.5"
+                      fill="#A0AEC0"
+                    />
+                    <rect
+                      x="5.4"
+                      y="1.5"
+                      width="2"
+                      height="6.5"
+                      rx="0.5"
+                      fill="#A0AEC0"
+                    />
+                    <rect
+                      x="8.1"
+                      y="0"
+                      width="2"
+                      height="8"
+                      rx="0.5"
+                      fill="#A0AEC0"
+                      opacity="0.3"
+                    />
+                  </svg>
+                  <!-- wifi -->
+                  <svg width="10" height="8" viewBox="0 0 12 9" fill="none">
+                    <path
+                      d="M1 3.5C2.8 1.3 4.8 0 6 0s3.2 1.3 5 3.5"
+                      stroke="#A0AEC0"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      fill="none"
+                    />
+                    <path
+                      d="M3 5.5C4 4.2 5 3.5 6 3.5s2 .7 3 2"
+                      stroke="#A0AEC0"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      fill="none"
+                    />
+                    <circle cx="6" cy="8" r="1" fill="#A0AEC0" />
+                  </svg>
+                  <!-- battery -->
+                  <svg width="16" height="8" viewBox="0 0 16 8" fill="none">
+                    <rect
+                      x="0.5"
+                      y="0.5"
+                      width="13"
+                      height="7"
+                      rx="2"
+                      stroke="#A0AEC0"
+                      stroke-width="1"
+                    />
+                    <rect
+                      x="1.5"
+                      y="1.5"
+                      width="9"
+                      height="5"
+                      rx="1"
+                      fill="#A0AEC0"
+                    />
+                    <path
+                      d="M14.5 2.5v3"
+                      stroke="#A0AEC0"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Live status card -->
+              <div class="mock-live-card">
+                <div class="mock-card-top">
+                  <span class="mock-caption">Nap #2</span>
+                  <span class="mock-live-badge">Live</span>
+                </div>
+                <div class="mock-headline-row">
+                  <span class="mock-headline">Eimantas is napping</span>
+                  <div class="mock-zzz">
+                    <span
+                      style="
+                        font-size: 10px;
+                        font-weight: 700;
+                        color: #6366f1;
+                        opacity: 0.85;
+                      "
+                      >z</span
+                    >
+                    <span
+                      style="
+                        font-size: 8px;
+                        font-weight: 700;
+                        color: #6366f1;
+                        opacity: 0.6;
+                      "
+                      >z</span
+                    >
+                    <span
+                      style="
+                        font-size: 6px;
+                        font-weight: 700;
+                        color: #6366f1;
+                        opacity: 0.4;
+                      "
+                      >z</span
+                    >
+                  </div>
+                </div>
+                <div class="mock-time-row">
+                  <div class="mock-time-range">
+                    <span class="mock-time-val">14:15</span>
+                    <span class="mock-time-arrow">→</span>
+                    <span class="mock-time-val">16:00</span>
+                  </div>
+                  <div class="mock-elapsed-col">
+                    <div class="mock-elapsed-label">Elapsed</div>
+                    <div class="mock-elapsed-val">00:24:15</div>
+                  </div>
+                </div>
+                <div class="mock-progress-bar">
+                  <div class="mock-progress-fill"></div>
+                </div>
+                <div class="mock-countdown">1 hr 21 min until wake time</div>
+              </div>
+
+              <!-- Quick action pill -->
+              <div class="mock-quick-action">
+                <div class="mock-pill">
+                  Woke up already? <strong>End nap</strong>
+                </div>
+              </div>
+
+              <!-- Summary -->
+              <div class="mock-summary">
+                <div class="mock-summary-label">Planned today</div>
+                <div class="mock-summary-row">
+                  <div class="mock-summary-item">
+                    <!-- Sun icon -->
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#F59E0B"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="4" />
+                      <path
+                        d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+                      />
+                    </svg>
+                    <span class="mock-summary-type">Wake</span>
+                    <span class="mock-summary-val">9h 30m</span>
+                  </div>
+                  <div class="mock-divider"></div>
+                  <div class="mock-summary-item">
+                    <!-- Moon icon -->
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#6366F1"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                      />
+                    </svg>
+                    <span class="mock-summary-type">Napping</span>
+                    <span class="mock-summary-val">3h 30m</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Schedule section label -->
+              <div class="mock-section-label">Today's schedule</div>
+
+              <!-- Timeline -->
+              <div class="mock-timeline">
+                <div class="mock-timeline-line"></div>
+
+                <!-- Past: Wake window #2 (faded) -->
+                <div class="mock-trow" style="opacity: 0.45">
+                  <div
+                    class="mock-trow-icon"
+                    style="background: rgba(160, 174, 192, 0.12)"
+                  >
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#A0AEC0"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="4" />
+                      <path
+                        d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+                      />
+                    </svg>
+                  </div>
+                  <div class="mock-trow-content">
+                    <div class="mock-trow-title" style="color: #a0aec0">
+                      Wake window <span style="font-weight: 400">#2</span>
+                    </div>
+                    <div class="mock-trow-sub">11:15 → 14:15 · 3 hr</div>
+                  </div>
+                </div>
+
+                <!-- Current: Nap #2 (amber highlighted) -->
+                <div class="mock-trow">
+                  <div
+                    class="mock-trow-icon"
+                    style="
+                      background: #f59e0b;
+                      border: 1.5px solid #f59e0b;
+                      box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+                    "
+                  >
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#FDF5E6"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    class="mock-trow-content"
+                    style="
+                      background: rgba(245, 158, 11, 0.1);
+                      border: 1px solid rgba(245, 158, 11, 0.3);
+                    "
+                  >
+                    <div class="mock-trow-title">
+                      Nap
+                      <span style="color: #a0aec0; font-weight: 400">#2</span>
+                    </div>
+                    <div class="mock-trow-sub" style="color: #a0aec0">
+                      14:15 → 16:00 · 1 hr 45 min
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Upcoming: Wake window #3 -->
+                <div class="mock-trow">
+                  <div
+                    class="mock-trow-icon"
+                    style="background: rgba(245, 158, 11, 0.14)"
+                  >
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#F59E0B"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="4" />
+                      <path
+                        d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+                      />
+                    </svg>
+                  </div>
+                  <div class="mock-trow-content">
+                    <div class="mock-trow-title" style="color: #64748b">
+                      Wake window <span style="font-weight: 400">#3</span>
+                    </div>
+                    <div class="mock-trow-sub">16:00 → 20:00 · 4 hr</div>
+                  </div>
+                </div>
+
+                <!-- Upcoming: Bedtime -->
+                <div class="mock-trow">
+                  <div
+                    class="mock-trow-icon"
+                    style="background: rgba(129, 140, 248, 0.14)"
+                  >
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#818CF8"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                      />
+                    </svg>
+                  </div>
+                  <div class="mock-trow-content">
+                    <div class="mock-trow-title" style="color: #64748b">
+                      Bedtime
+                    </div>
+                    <div class="mock-trow-sub">
+                      20:00 · Sleep tight, little one
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom nav -->
+              <div class="mock-nav">
+                <!-- Schedule (active) -->
+                <div class="mock-nav-item">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="#F59E0B"
+                    stroke="#F59E0B"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                  <span class="mock-nav-label" style="color: #f59e0b"
+                    >Schedule</span
+                  >
+                </div>
+                <!-- Template -->
+                <div class="mock-nav-item">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#A0AEC0"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="8" y1="6" x2="21" y2="6" />
+                    <line x1="8" y1="12" x2="21" y2="12" />
+                    <line x1="8" y1="18" x2="21" y2="18" />
+                    <line x1="3" y1="6" x2="3.01" y2="6" />
+                    <line x1="3" y1="12" x2="3.01" y2="12" />
+                    <line x1="3" y1="18" x2="3.01" y2="18" />
+                  </svg>
+                  <span class="mock-nav-label" style="color: #a0aec0"
+                    >Template</span
+                  >
+                </div>
+                <!-- Settings -->
+                <div class="mock-nav-item">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#A0AEC0"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                      d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                    />
+                  </svg>
+                  <span class="mock-nav-label" style="color: #a0aec0"
+                    >Settings</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FEATURES ────────────────────────────────── -->
+    <section id="features">
+      <div class="container">
+        <div class="section-label">Features</div>
+        <h2 class="section-title">Everything a tired parent needs</h2>
+        <p class="section-sub">
+          Built around the real rhythm of a baby's day — not a rigid alarm
+          clock, but a living plan that adapts as the day unfolds.
+        </p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon icon-amber">⚡</div>
+            <div class="feature-title">Instant schedule generation</div>
+            <p class="feature-desc">
+              Enter your baby's wake-up time and NapMap builds the entire day —
+              awake windows, naps, and bedtime — in one tap.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon icon-green">🟢</div>
+            <div class="feature-title">Live status, always current</div>
+            <p class="feature-desc">
+              A real-time card tells you exactly what's happening right now —
+              whether baby is awake, napping, or heading to bed — with a live
+              countdown.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon icon-indigo">✏️</div>
+            <div class="feature-title">One-tap adjustments</div>
+            <p class="feature-desc">
+              Baby fell asleep early? Woke up late? Tap once to adjust any block
+              and every subsequent time cascades automatically.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon icon-blue">📅</div>
+            <div class="feature-title">Auto-reset every morning</div>
+            <p class="feature-desc">
+              Each new day starts fresh automatically. No manual clearing, no
+              leftover data — just open the app and enter today's wake time.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon icon-pink">🌙</div>
+            <div class="feature-title">Flexible nap templates</div>
+            <p class="feature-desc">
+              Configure your baby's awake window durations and nap lengths in
+              settings. NapMap adapts as your baby grows and schedules evolve.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon icon-slate">🌗</div>
+            <div class="feature-title">Dark & light mode</div>
+            <p class="feature-desc">
+              Designed for middle-of-the-night checks. A polished dark theme is
+              the default, with a clean light mode for daytime use.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HOW IT WORKS ───────────────────────────── -->
+    <section class="how-section" id="how">
+      <div class="container">
+        <div class="section-label">How it works</div>
+        <h2 class="section-title">Up and running in 10 seconds</h2>
+        <p class="section-sub">
+          No account, no setup, no subscriptions. Just open it and go.
+        </p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num active">1</div>
+            <div class="step-title">Enter wake-up time</div>
+            <p class="step-desc">
+              Type in the time your baby woke up this morning — that's all the
+              information NapMap needs.
+            </p>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-title">Get the full day plan</div>
+            <p class="step-desc">
+              NapMap generates an alternating awake–nap–awake schedule from
+              wake-up through bedtime, based on your settings.
+            </p>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-title">Follow along in real time</div>
+            <p class="step-desc">
+              The live card tracks the current window and counts down to the
+              next transition. Adjust any block with a tap if reality changes.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PRIVACY ─────────────────────────────────── -->
+    <section id="privacy">
+      <div class="container">
+        <div class="privacy-banner">
+          <div class="privacy-icon">🔒</div>
+          <div>
+            <div class="privacy-title">100% private, by design</div>
+            <p class="privacy-desc">
+              NapMap has no backend, no accounts, and no analytics. Every piece
+              of data you enter stays on your device only — and auto-clears
+              every morning. We built it this way intentionally, because your
+              family's routine is yours alone.
+            </p>
+            <div class="privacy-pills">
+              <span class="pill">No account required</span>
+              <span class="pill">No data collected</span>
+              <span class="pill">No internet needed</span>
+              <span class="pill">Offline first</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── NOTIFY ──────────────────────────────────── -->
+    <section class="notify-section" id="notify">
+      <div class="container">
+        <div class="notify-card">
+          <div class="notify-moon">
+            <svg
+              viewBox="0 0 80 60"
+              width="80"
+              height="60"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M 46,8 A 16,16 0 1 0 46,44 A 14,14 0 1 1 46,8 Z"
+                fill="#F59E0B"
+                fill-opacity="0.85"
+              />
+              <circle
+                cx="66"
+                cy="6"
+                r="1.5"
+                fill="#A0AEC0"
+                fill-opacity="0.5"
+              />
+              <circle
+                cx="72"
+                cy="16"
+                r="1"
+                fill="#A0AEC0"
+                fill-opacity="0.35"
+              />
+              <circle
+                cx="14"
+                cy="10"
+                r="1.2"
+                fill="#A0AEC0"
+                fill-opacity="0.45"
+              />
+              <circle
+                cx="20"
+                cy="22"
+                r="0.8"
+                fill="#A0AEC0"
+                fill-opacity="0.3"
+              />
+              <circle
+                cx="60"
+                cy="28"
+                r="1"
+                fill="#A0AEC0"
+                fill-opacity="0.25"
+              />
+            </svg>
+          </div>
+          <h2 class="notify-title">Get notified at launch</h2>
+          <p class="notify-sub">
+            Be the first to know when NapMap lands on the App Store and Google
+            Play.
+          </p>
+          <form
+            class="notify-form"
+            id="notifyForm"
+            action="https://formspree.io/f/mdawydpp"
+            method="POST"
+            onsubmit="handleNotify(event)"
+          >
+            <input
+              class="notify-input"
+              type="email"
+              name="email"
+              placeholder="your@email.com"
+              aria-label="Email address"
+              required
+            />
+            <button class="notify-btn" type="submit">Notify me</button>
+          </form>
+          <div class="notify-success" id="notifySuccess">
+            <span class="notify-success-icon">✅</span>
+            <span class="notify-success-msg"
+              >You're on the list! We'll be in touch.</span
+            >
+          </div>
+          <p class="notify-note">
+            No spam. One email when the app ships. That's it.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ──────────────────────────────────── -->
+    <footer>
+      <div class="inner">
+        <a href="#" class="footer-logo">
+          <img
+            src="data:image/png;base64,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"
+            alt="NapMap"
+            style="border-radius: 6px; width: 24px; height: 24px"
+          />
+          <span class="footer-name">NapMap</span>
+        </a>
+        <div class="footer-links">
+          <a href="#features" class="footer-link">Features</a>
+          <a href="#how" class="footer-link">How it works</a>
+          <a href="privacy-policy" class="footer-link">Privacy Policy</a>
+        </div>
+        <span class="footer-copy">© 2026 NapMap. All rights reserved.</span>
+      </div>
+    </footer>
+
+    <script>
+      async function handleNotify(e) {
+        e.preventDefault();
+        const form = document.getElementById("notifyForm");
+        const success = document.getElementById("notifySuccess");
+        const data = new FormData(form);
+        try {
+          const res = await fetch(form.action, {
+            method: "POST",
+            body: data,
+            headers: { Accept: "application/json" },
+          });
+          if (res.ok) {
+            form.style.display = "none";
+            success.style.display = "flex";
+          }
+        } catch (_) {}
+      }
+    </script>
+  </body>
 </html>
